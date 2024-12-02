@@ -8,16 +8,21 @@ class ChangeValue {
         } else {
           return value;
         }
-      } catch(e) {
-      console.error(e);
+      } catch (e) {
+        console.error(e);
       }
     },
     日付: function date_array(i, value, replace_data, cer_name) {
       try {
         if (replace_data.get(cer_name)["day_display"] == "YYYY年MM月DD日") {
-          if (Object.prototype.toString.call(value[i]).includes('Date')) {
-            value[i] = value[i].toLocaleDateString("ja-JP", {year: "numeric",month: "2-digit",
-              day: "2-digit"}).replaceAll('/', '-');
+          if (Object.prototype.toString.call(value[i]).includes("Date")) {
+            value[i] = value[i]
+              .toLocaleDateString("ja-JP", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              })
+              .replaceAll("/", "-");
           }
 
           if (value[i] && value[i].trim() !== "") {
@@ -36,18 +41,23 @@ class ChangeValue {
         } else {
           return value;
         }
-      } catch(e) {
+      } catch (e) {
         console.error(e);
-      }      
+      }
     },
     日付_年月のみ: function date_array(i, value, replace_data, cer_name) {
       try {
         if (replace_data.get(cer_name)["day_display"] == "YYYY年MM月DD日") {
-          if (Object.prototype.toString.call(value[i]).includes('Date')) {
-            value[i] = value[i].toLocaleDateString("ja-JP", {year: "numeric",month: "2-digit",
-              day: "2-digit"}).replaceAll('/', '-');
+          if (Object.prototype.toString.call(value[i]).includes("Date")) {
+            value[i] = value[i]
+              .toLocaleDateString("ja-JP", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              })
+              .replaceAll("/", "-");
           }
-          
+
           if (value[i] && value[i].trim() !== "") {
             let originalDateString = value[i];
             let originalDate = new Date(originalDateString);
@@ -75,8 +85,8 @@ class ChangeValue {
             return value;
           }
         }
-      } catch(e) {
-      console.error(e);
+      } catch (e) {
+        console.error(e);
       }
     },
     金額: function addCommasToValue(i, value) {
@@ -85,7 +95,7 @@ class ChangeValue {
           value[i] = parseFloat(value[i]).toLocaleString("en-US");
         }
         return value;
-      } catch(e) {
+      } catch (e) {
         console.error(e);
       }
     },
@@ -98,7 +108,9 @@ class ChangeValue {
     ) {
       try {
         let tablefield_name = replace_data.get(cer_name)["table_field"];
-        let table = tablefield_name.map((name) => name.replace(/^\{%|\%}$/g, ""));
+        let table = tablefield_name.map((name) =>
+          name.replace(/^\{%|\%}$/g, "")
+        );
         let table_content = displayValue[table[i]].value;
         let pp = 0;
         for (let jj = i + 1; jj < tablefield_name.length - 1; jj++) {
@@ -116,11 +128,11 @@ class ChangeValue {
             value[jj] = "";
           }
         }
-      } catch(e) {
+      } catch (e) {
         console.error(e);
-        value[jj] ="";
+        value[jj] = "";
       }
-//      console.log(value);
+      //      console.log(value);
       return value;
     },
     個別関数1: function original_function1(
@@ -152,7 +164,7 @@ class ChangeValue {
             value[i + mapping[key].index] = mapping[key].value1;
           }
         }
-      } catch(e) {
+      } catch (e) {
         console.error(e);
       }
       return value;
@@ -186,7 +198,7 @@ class ChangeValue {
             value[i + mapping[key].index] = mapping[key].value1;
           }
         }
-      } catch(e) {
+      } catch (e) {
         console.error(e);
       }
       return value;
@@ -206,15 +218,21 @@ class ChangeValue {
           value[i + 2 + (index - 1) * 3] = reasons;
         } else if (reasons.length < 53) {
           value[i + 1 + (index - 1) * 3] = reasons.substring(0, 10);
-          value[i + 2 + (index - 1) * 3] = reasons.substring(11, reasons.length);
+          value[i + 2 + (index - 1) * 3] = reasons.substring(
+            11,
+            reasons.length
+          );
         } else {
           value[i + 1 + (index - 1) * 3] = reasons.substring(0, 10);
           value[i + 2 + (index - 1) * 3] = reasons.substring(11, 53);
-          value[i + 3 + (index - 1) * 3] = reasons.substring(54, reasons.length);
+          value[i + 3 + (index - 1) * 3] = reasons.substring(
+            54,
+            reasons.length
+          );
         }
 
         value[i] = "";
-      } catch(e) {
+      } catch (e) {
         console.error(e);
       }
       return value;
@@ -236,14 +254,15 @@ class ReplaceValue extends ChangeValue {
     this.display_html = new Map();
     this.displayValue = {};
     this.initialized = 0;
-    this.caller = (caller === undefined) ? "viewer" : caller;
+    this.caller = caller === undefined ? "viewer" : caller;
   }
 
   replaceGetValue(cer_name, displayValue) {
     try {
       this.displayValue = displayValue;
       this.field_name_array = this.replace_data.get(cer_name)["field_name"];
-      this.replace_value_array = this.replace_data.get(cer_name)["replace_value"];
+      this.replace_value_array =
+        this.replace_data.get(cer_name)["replace_value"];
       this.kind_value_array = this.replace_data.get(cer_name)["kind_value"];
       this.customer_value = [];
 
@@ -252,10 +271,13 @@ class ReplaceValue extends ChangeValue {
         function replaceTemplate(templateString) {
           // プレースホルダーを正規表現でマッチさせる
           return templateString.replace(/{%([^%]+)%}/g, (match, p1) => {
-          // プレースホルダーからフィールド名を取得し、値に変換する
-          const key = p1.trim();
-          if (this.displayValue[key] && this.displayValue[key].value != null) {
-            return this.displayValue[key].value.replace(/\n/g, "<br>");
+            // プレースホルダーからフィールド名を取得し、値に変換する
+            const key = p1.trim();
+            if (
+              this.displayValue[key] &&
+              this.displayValue[key].value != null
+            ) {
+              return this.displayValue[key].value.replace(/\n/g, "<br>");
             }
             return ""; // 値が存在しない場合は空文字を返す
           });
@@ -272,17 +294,17 @@ class ReplaceValue extends ChangeValue {
             this.replace_data,
             cer_name,
             this.displayValue
-         );
+          );
         }
       }
-    } catch(e) {
+    } catch (e) {
       console.error(e);
     }
   }
 
   replaceValueProcess(ledgerNames) {
     for (let ledgerName of ledgerNames) {
-//      this.replaceGetValue(ledgerName);
+      //      this.replaceGetValue(ledgerName);
       for (let template of this.template_array) {
         if (template[0].indexOf(ledgerName) > -1) {
           if (ledgerName == "退職証明書") {
@@ -308,25 +330,30 @@ class ReplaceValue extends ChangeValue {
     let retC = false;
     const entries = Object.entries(data_object);
     for (let [key, obj] of entries) {
-//        console.log(key, obj);
-      if ((obj.type === "DATE") && (obj.value !== "")) {
-        obj.value = new Date(obj.value).toLocaleDateString("ja-JP", {year: "numeric",month: "2-digit",
-          day: "2-digit"}).replaceAll('/', '-');
+      //        console.log(key, obj);
+      if (obj.type === "DATE" && obj.value !== "") {
+        obj.value = new Date(obj.value)
+          .toLocaleDateString("ja-JP", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          })
+          .replaceAll("/", "-");
       } else if (obj.type === "SUBTABLE") {
-//        delete data_object[key];
+        //        delete data_object[key];
       } else if (obj.type === "LABEL") {
-//        delete data_object[key];
+        //        delete data_object[key];
       }
     }
     return retC;
   }
 
   replaceGetStatus() {
-     return this.initialized;
+    return this.initialized;
   }
 
   replaceInitProcess(ledgerNames) {
-//*** Initialization of printprocess - get 帳票フィールド管理アプリ・データ ***
+    //*** Initialization of printprocess - get 帳票フィールド管理アプリ・データ ***
     const relay = new Relay(
       3851,
       [
@@ -339,7 +366,8 @@ class ReplaceValue extends ChangeValue {
       ["帳票名", "フィールド管理", "日付の表示方法", "htmファイル"]
     );
 
-    relay.RelayGetValue()
+    relay
+      .RelayGetValue()
       .then((data) => {
         const storedValues = JSON.parse(sessionStorage.getItem("fileValues1"));
         if (storedValues) {
@@ -398,7 +426,7 @@ class Relay {
 
         this.data = await response.json();
         sessionStorage.setItem("getValue1", JSON.stringify(this.data));
-//        console.log(this.data); // レスポンスデータを処理
+        //        console.log(this.data); // レスポンスデータを処理
       } catch (error) {
         console.error("Error:", error); // エラーハンドリング
       }
